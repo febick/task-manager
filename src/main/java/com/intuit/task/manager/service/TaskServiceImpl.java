@@ -13,9 +13,11 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -38,15 +40,16 @@ public class TaskServiceImpl implements TaskService {
         try {
             Method method = this.getClass().getDeclaredMethod("addBy_" + creatingType.name().toLowerCase(), Process.class);
             return (ProcessResponseData) method.invoke(this, process);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e.getTargetException());
         }
     }
 
     private ProcessResponseData addBy_naive(Process process) {
         if (checkCapacity()) return saveAndReturn(process);
         String excMessage = String.format("The task manager has already accepted the maximum number of tasks: %d", maxCapacity);
-        log.error(excMessage);
         throw new MaximumCapacityExceededException(excMessage);
     }
 
@@ -63,7 +66,6 @@ public class TaskServiceImpl implements TaskService {
             } else {
                 String excMessage = String.format("The task manager has already accepted the maximum number of tasks (%d) " +
                         "and none of them has a lower priority than the current one.", maxCapacity);
-                log.error(excMessage);
                 throw new UnableToApplyPriorityOrderException(excMessage);
             }
         }
@@ -90,16 +92,13 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ProcessResponseData getProcess(long id) {
         Process process = repository.getByPid(id);
-        if (process == null) {
-            String excMessage = String.format("Process with id %d wasn't found", id);
-            log.error(excMessage);
-            throw new ProcessNotFoundException(excMessage);
-        }
+        if (process == null) throw new ProcessNotFoundException(String.format("Process with id %d wasn't found", id));
         log.debug("Returned a process with id {}", id);
         return entityToDto(process);
     }
 
     @Override
+    @Transactional
     public List<ProcessResponseData> killAllProcesses() {
         List<ProcessResponseData> tasksToRemove = getAllProcesses(SortingType.DATE);
         repository.deleteAll();
@@ -108,17 +107,21 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional
     public List<ProcessResponseData> killProcess(long... list) {
         List<ProcessResponseData> result = new ArrayList<>();
         List<Process> remove = new ArrayList<>();
 
-        for (long pid : list ) {
-            Process task = repository.getById(pid);
+        for (long pid : list) {
+            Optional<Process> optionalTask = repository.findById(pid);
+            if (optionalTask.isEmpty()) throw new ProcessNotFoundException(String.format("Process with id %d wasn't found", pid));
+            Process task = optionalTask.get();
             remove.add(task);
             result.add(entityToDto(task));
             log.trace("A process with ID {} has been marked for deletion", task.getPid());
         }
         repository.deleteAllInBatch(remove);
+
         log.debug("Processes deleted: {}", remove.size());
         return result;
     }
@@ -144,6 +147,13 @@ public class TaskServiceImpl implements TaskService {
 
     @ManagedOperation
     public void setMaxCapacity(int maxCapacity) {
+        log.info("The capacity has been changed. The new value is {}, the previous value is {}.", maxCapacity, this.maxCapacity);
+        boolean needToClean = repository.count() >= maxCapacity;
+        if (needToClean) {
+            killAllProcesses();
+            log.info("Since the number of existing tasks exceeded the new maximum capacity parameter, the task list was cleared.");
+            // TODO: (BACKLOG) It is better to delete the oldest tasks so as not to exceed the new capacity
+        }
         this.maxCapacity = maxCapacity;
     }
 
