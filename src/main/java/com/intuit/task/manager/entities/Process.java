@@ -13,12 +13,14 @@ public class Process {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long pid;
-    @Enumerated(EnumType.STRING)
-    private PriorityType priority;
-    private LocalDateTime created;
 
-    public Process(PriorityType priority) {
-        this.priority = priority;
+    private int priority;
+    private LocalDateTime created;
+    private String task;
+
+    public Process(String task, PriorityType priority) {
+        this.task = task;
+        this.priority = priority.ordinal();
         this.created = LocalDateTime.now();
     }
 
