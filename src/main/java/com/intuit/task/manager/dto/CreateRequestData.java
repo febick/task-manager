@@ -1,10 +1,12 @@
 package com.intuit.task.manager.dto;
 
 import com.intuit.task.manager.validation.ValueInEnum;
-import lombok.Data;
+import lombok.*;
 import javax.validation.constraints.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateRequestData {
 
     @NotEmpty

@@ -2,22 +2,15 @@ package com.intuit.task.manager.service;
 
 import com.intuit.task.manager.dto.*;
 import com.intuit.task.manager.entities.Process;
-import com.intuit.task.manager.exceptions.MaximumCapacityExceededException;
-import com.intuit.task.manager.exceptions.ProcessNotFoundException;
-import com.intuit.task.manager.exceptions.UnableToApplyPriorityOrderException;
+import com.intuit.task.manager.exceptions.*;
 import com.intuit.task.manager.repo.ProcessRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedResource;
+import org.springframework.jmx.export.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.*;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -54,7 +47,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private ProcessResponseData addBy_fifo(Process process) {
-        repository.removeTheOldestProcess();
+        if (!checkCapacity()) repository.removeTheOldestProcess();
         return saveAndReturn(process);
     }
 
@@ -137,24 +130,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private boolean checkCapacity() {
-        return repository.count() < maxCapacity;
+        return repository.count() < getMaxCapacity();
     }
 
     @ManagedOperation
-    public int getMaxCapacity() {
+    private int getMaxCapacity() {
         return maxCapacity;
     }
 
     @ManagedOperation
-    public void setMaxCapacity(int maxCapacity) {
-        log.info("The capacity has been changed. The new value is {}, the previous value is {}.", maxCapacity, this.maxCapacity);
-        boolean needToClean = repository.count() >= maxCapacity;
-        if (needToClean) {
-            killAllProcesses();
-            log.info("Since the number of existing tasks exceeded the new maximum capacity parameter, the task list was cleared.");
-            // TODO: (BACKLOG) It is better to delete the oldest tasks so as not to exceed the new capacity
+    private void setMaxCapacity(int maxCapacity) {
+        if (this.maxCapacity < maxCapacity) {
+            this.maxCapacity = maxCapacity;
+            log.info("The capacity has been changed. The new value is {}, the previous value is {}.", maxCapacity, this.maxCapacity);
+        } else {
+            String excMessage = String.format("The new capacity (%d) cannot be less than the current one (%d)", maxCapacity, this.maxCapacity);
+            log.error(excMessage);
+            throw new IllegalArgumentException(excMessage);
         }
-        this.maxCapacity = maxCapacity;
     }
 
 }

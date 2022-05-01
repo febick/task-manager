@@ -4,6 +4,7 @@ import com.intuit.task.manager.dto.*;
 import com.intuit.task.manager.service.TaskService;
 import com.intuit.task.manager.validation.ValueInEnum;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -17,6 +18,7 @@ public class TaskController {
     private TaskService service;
 
     @PostMapping("/tasks")
+    @ResponseStatus(HttpStatus.CREATED)
     public ProcessResponseData addTask(@RequestBody @Valid CreateRequestData data) {
         return service.addProcess(data.getTask(),
                 CreatingType.valueOf(data.getType().toUpperCase()),
