@@ -252,7 +252,7 @@ public class TaskServiceImpl implements TaskService {
      * @return the current capacity size
      */
     @ManagedOperation
-    private int getMaxCapacity() {
+    public int getMaxCapacity() {
         return maxCapacity;
     }
 
@@ -264,7 +264,7 @@ public class TaskServiceImpl implements TaskService {
      * @param maxCapacity is a new capacity value
      */
     @ManagedOperation
-    private void setMaxCapacity(int maxCapacity) {
+    public void setMaxCapacity(int maxCapacity) {
         if (this.maxCapacity < maxCapacity) {
             this.maxCapacity = maxCapacity;
             log.info("The capacity has been changed. The new value is {}, the previous value is {}.", maxCapacity, this.maxCapacity);
