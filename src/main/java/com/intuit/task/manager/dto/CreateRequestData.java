@@ -4,6 +4,9 @@ import com.intuit.task.manager.validation.ValueInEnum;
 import lombok.*;
 import javax.validation.constraints.*;
 
+/**
+ * The DTO is used to send a request to create a new process
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
