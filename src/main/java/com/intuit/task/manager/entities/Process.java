@@ -5,6 +5,9 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * An entity for collect in a database
+ */
 @Entity
 @Table(name = "processes")
 @NoArgsConstructor

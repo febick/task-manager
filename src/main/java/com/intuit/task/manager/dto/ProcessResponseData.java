@@ -3,6 +3,9 @@ package com.intuit.task.manager.dto;
 import lombok.*;
 import java.time.LocalDateTime;
 
+/**
+ * The DTO is used to return information about records in the database
+ */
 @Getter
 @Builder
 @ToString

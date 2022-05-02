@@ -3,6 +3,9 @@ package com.intuit.task.manager.dto;
 import lombok.*;
 import java.time.LocalDateTime;
 
+/**
+ * The DTO is used to return an error response in a more readable format.
+ */
 @NoArgsConstructor
 public class ErrorResponseData {
 

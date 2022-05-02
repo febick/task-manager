@@ -5,15 +5,18 @@ import java.lang.annotation.*;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * A validated annotation to check if a value is in an enumerable list
+ */
 @Documented
 @Constraint(validatedBy = ValueInEnumValidator.class)
-@Target({ METHOD, FIELD, ANNOTATION_TYPE, PARAMETER, CONSTRUCTOR })
+@Target({ FIELD, PARAMETER })
 @Retention(RUNTIME)
 public @interface ValueInEnum {
 
+    Class<? extends Enum<?>> enumType();
     String message() default "This value is not supported";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
-    Class<? extends Enum<?>> enumType();
 
 }
