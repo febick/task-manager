@@ -36,6 +36,7 @@ Specifying paths for requests and passed parameters.
 
 ## Adding new task
 * _POST: **/tasks**_
+The request must contain a body:
 ```
 {
     "task": "The Naive task",
