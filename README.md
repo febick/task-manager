@@ -77,6 +77,12 @@ The **_sort-type_** parameter can have one of the following values:
 ## Deleting tasks
 * _DELETE: **/tasks/remove/{id}**_ - to remove a task by ID
 * _DELETE: **/tasks/remove/all**_ - to remove all tasks
+* _DELETE: **/tasks/remove/all/{priority-type}**_ - to remove all tasks with specified priority
+
+The **_sort-type_** parameter can have one of the following values: 
+* low
+* medium
+* high
 
 To delete a list of tasks, the request must have a body:
 * _DELETE: **/tasks/remove/**_ 
