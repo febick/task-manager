@@ -79,7 +79,7 @@ The **_sort-type_** parameter can have one of the following values:
 * _DELETE: **/tasks/remove/all**_ - to remove all tasks
 * _DELETE: **/tasks/remove/all/{priority-type}**_ - to remove all tasks with specified priority
 
-The **_sort-type_** parameter can have one of the following values: 
+The **_priority-type_** parameter can have one of the following values: 
 * low
 * medium
 * high
