@@ -221,10 +221,24 @@ public class TaskServiceImpl implements TaskService {
     }
 
     /**
+     * Deleting all processes with specified priority
+     *
+     * @param type is PriorityType
+     * @return a list of all deleted objects
+     */
+    @Override
+    @Transactional
+    public List<ProcessResponseData> killProcessByPriority(PriorityType type) {
+        long[] ids = repository.getAllIdsByPriority(type.ordinal());
+        return killProcess(ids);
+    }
+
+    /**
      * Converts an entity to an DTO
      *
      * @param data is a Process entity
-     * @return a Process-DTO @see ProcessResponseData
+     * @return a Process-DTO
+     * @see ProcessResponseData
      */
     private ProcessResponseData entityToDto(Process data) {
         log.trace("Process with id {} was converted to DTO for Response", data.getPid());
