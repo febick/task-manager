@@ -35,7 +35,7 @@ docker-compose up -d
 Specifying paths for requests and passed parameters.
 
 ## Adding new task
-_POST: **/tasks**_
+* _POST: **/tasks**_
 ```
 {
     "task": "The Naive task",
@@ -63,9 +63,9 @@ The response in case of successful addition should have the following structure:
 }
 ```
 ## Getting tasks
-_GET: **/tasks/{id}**_ - to get a task by ID
-_GET: **/tasks/**_ - to get all task sorted by default (date)
-_GET: **/tasks/sortedBy/{sort-type}**_ - to get all task sorted by specified parameter
+* _GET: **/tasks/{id}**_ - to get a task by ID
+* _GET: **/tasks/**_ - to get all task sorted by default (date)
+* _GET: **/tasks/sortedBy/{sort-type}**_ - to get all task sorted by specified parameter
 
 The **_sort-type_** parameter can have one of the following values: 
 * date
@@ -73,11 +73,11 @@ The **_sort-type_** parameter can have one of the following values:
 * priority
 
 ## Deleting tasks
-_DELETE: **/tasks/remove/{id}**_ - to remove a task by ID
-_DELETE: **/tasks/remove/all**_ - to remove all tasks
+* _DELETE: **/tasks/remove/{id}**_ - to remove a task by ID
+* _DELETE: **/tasks/remove/all**_ - to remove all tasks
 
 To delete a list of tasks, the request must have a body:
-_DELETE: **/tasks/remove/**_ 
+* _DELETE: **/tasks/remove/**_ 
 ```
 {
     "list": [{id}, {id}, {id}]
