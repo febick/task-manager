@@ -28,6 +28,14 @@ public interface ProcessRepository extends JpaRepository<Process, Long> {
     Long getTheOldestTaskIdWithLessPriorityThanCurrent(@Param("level") int currentLevel);
 
     /**
+     * Getting the ID of all processes with a given priority
+     *
+     * @param currentLevel the current Priority level
+     * @return list of all selected values
+     */
+    @Query(value = "SELECT pid FROM processes WHERE priority = :level", nativeQuery = true)
+    long[] getAllIdsByPriority(@Param("level") int currentLevel);
+    /**
      * Getting a list of all records (sorted by date)
      *
      * @return sorted list of all values

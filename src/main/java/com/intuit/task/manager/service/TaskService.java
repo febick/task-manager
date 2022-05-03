@@ -57,4 +57,13 @@ public interface TaskService {
      */
     List<ProcessResponseData> killProcess(long... list);
 
+    /**
+     * Kills all processes with the specified priority
+     *
+     * @param type is PriorityType
+     * @see PriorityType
+     * @return the list of killed processes
+     */
+    List<ProcessResponseData> killProcessByPriority(PriorityType type);
+
 }

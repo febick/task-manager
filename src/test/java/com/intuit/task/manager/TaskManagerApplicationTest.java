@@ -190,6 +190,24 @@ public class TaskManagerApplicationTest {
 
     @Test
     @Order(11)
+    @DisplayName("Deleting list of process by Priority")
+    void deleteByPriority() throws Exception {
+        service.addProcess("HIGH", CreatingType.NAIVE, PriorityType.HIGH);
+        service.addProcess("HIGH", CreatingType.NAIVE, PriorityType.HIGH);
+        service.addProcess("MEDIUM", CreatingType.NAIVE, PriorityType.MEDIUM);
+
+        String responseJSON = deleteAction("/tasks/remove/all/high");
+        ProcessResponseData[] tasks = mapJsonToObjects(responseJSON);
+
+        // The request should return the deleted object, one record should remain in the database
+        assertThat(tasks[0].getPriority()).isEqualTo(PriorityType.HIGH);
+        assertThat(tasks[1].getPriority()).isEqualTo(PriorityType.HIGH);
+        assertThat(listOfAllTasks().size()).isEqualTo(1);
+        assertThat(listOfAllTasks().get(0).getPriority()).isEqualTo(PriorityType.MEDIUM);
+    }
+
+    @Test
+    @Order(12)
     @DisplayName("Changing the capacity")
     void changeCapacity() {
         try {

@@ -98,6 +98,21 @@ public class TaskController {
     }
 
     /**
+     * Remove all processes with specified Priority
+     * @see PriorityType
+     *
+     * @param priorityType is type of tasks for removing
+     * @return list of all removed processes
+     */
+    @DeleteMapping("/tasks/remove/all/{priority-type}")
+    public List<ProcessResponseData> removeAllTasksByPriority(
+            @PathVariable(name = "priority-type")
+            @ValueInEnum(enumType = PriorityType.class)
+            String priorityType) {
+        return service.killProcessByPriority(PriorityType.valueOf(priorityType.toUpperCase()));
+    }
+
+    /**
      * Remove all tasks
      *
      * @return the list of all removed processes
