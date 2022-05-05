@@ -33,8 +33,9 @@ public class TaskServiceImpl implements TaskService {
      * @param repository the implementation of ProcessRepository
      * @see ProcessRepository
      */
-    public TaskServiceImpl(ProcessRepository repository) {
+    public TaskServiceImpl(ProcessRepository repository, @Value("${app.task.manager.capacity.max:25}") int maxCapacity) {
         this.repository = repository;
+        this.maxCapacity = maxCapacity;
         afterInitCheck();
     }
 
@@ -43,7 +44,6 @@ public class TaskServiceImpl implements TaskService {
      *  It is a @ManagedResource and can be changed on the fly.
      *  @see TaskServiceImpl#setMaxCapacity
      */
-    @Value("${app.task.manager.capacity.max:25}")
     private int maxCapacity;
 
     /**
@@ -294,12 +294,22 @@ public class TaskServiceImpl implements TaskService {
      *
      * In case of launching an application with a set capacity parameter, whose level is lower than
      * the current number of processes, the deletion method is called.
+     *
+     * Also checks that the capacity must be greater than zero.
      */
     private void afterInitCheck() {
         if (!checkCapacity()) {
             List<ProcessResponseData> removed = killAllProcesses();
             log.info("The number of processes saved before restarting the application {} exceeds the " +
-                    "current maximum allowed setting {}. All previously created processes have been removed.", removed.size(), getMaxCapacity());
+                    "current maximum allowed setting {}. " +
+                    "All previously created processes have been removed.", removed.size(), maxCapacity);
+        }
+
+        if (maxCapacity <= 0) {
+            String excMessage = String.format("Capacity (%d) must be greater than zero. " +
+                    "Check the app.task.manager.capacity.max parameter.", maxCapacity);
+            log.error(excMessage);
+            throw new IllegalArgumentException(excMessage);
         }
     }
 
